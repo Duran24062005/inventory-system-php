@@ -1,0 +1,12 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(?:\.git|vendor|src|views|docs)(?:/|$) - [F,L]
+    RewriteRule ^(?:composer\.(?:json|lock)|Dockerfile|docker-compose\.yml|README\.md|\.env(?:\..*)?)$ - [F,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
