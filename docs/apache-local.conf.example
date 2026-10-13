@@ -1,0 +1,14 @@
+# Ejemplo para servir el proyecto bajo:
+# http://localhost/inventory-system/
+#
+# Copia este bloque en la configuración de un VirtualHost o en un archivo de
+# sitio de Apache. No lo pegues dentro de .env ni lo subas como configuración
+# global sin revisar las rutas de tu equipo.
+
+Alias /inventory-system/ /var/www/html/inventory-system/public/
+
+<Directory "/var/www/html/inventory-system/public/">
+    AllowOverride All
+    Require all granted
+    DirectoryIndex index.php
+</Directory>

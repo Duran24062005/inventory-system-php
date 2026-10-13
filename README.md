@@ -24,8 +24,16 @@ Composer y PostgreSQL.
 4. Inicia el servidor integrado de PHP:
 
    ```bash
-   php -S localhost:8080 -t public
+   php -S localhost:8080 -t public public/index.php
    ```
+
+Si Apache apunta al directorio completo del checkout, abre
+`http://localhost/inventory-system/`. El `index.php` de la raíz delega en el
+bootstrap de `public/` y evita que Apache muestre un listado de directorios.
+Para que también funcionen `/health` y futuras rutas, la configuración
+recomendada es servir `public/` como document root; usa el ejemplo de
+[`docs/apache-local.conf.example`](docs/apache-local.conf.example). No uses el
+checkout completo como document root en un entorno compartido.
 
 ## Ejecución con Docker
 
@@ -49,6 +57,7 @@ definido por `APP_PORT`.
 
 ```text
 public/       Punto de entrada HTTP
+api/          Entry point para la función PHP de Vercel
 src/Config/   Configuración y conexión PDO
 src/Http/     Request, Response y Router
 src/Controllers/
@@ -59,3 +68,10 @@ docs/         Decisiones y planificación del proyecto
 
 La conexión está centralizada en `Database::connection()`. Usa `DATABASE_URL`
 como opción principal y puede utilizar las variables `PG*` como alternativa.
+
+## Dónde editar manualmente
+
+Consulta [`docs/manual-edicion.md`](docs/manual-edicion.md) para ubicar rutas,
+controladores, vistas, conexión y variables sin mezclar responsabilidades.
+La configuración específica de Vercel está documentada por separado en
+[`docs/vercel-deployment.md`](docs/vercel-deployment.md).

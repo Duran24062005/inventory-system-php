@@ -1,5 +1,9 @@
 # Base PHP para sistema de ventas
 
+Este documento conserva el alcance del arranque inicial. Para la configuración
+actual de Apache local y Vercel, consulta `docs/manual-edicion.md` y
+`docs/vercel-deployment.md`.
+
 ## Resumen
 
 Configurar el proyecto como una aplicación de PHP puro con MVC ligero, Composer y PostgreSQL. El primer entregable será únicamente la estructura funcional de arranque; todavía no se implementarán productos, ventas ni inventario.
@@ -31,7 +35,8 @@ Docker levantará solo la aplicación PHP y se conectará al PostgreSQL definido
 - `docker compose config`.
 - Construcción correcta de la imagen.
 - Confirmación de que el contenedor tiene `pdo_pgsql`.
-- Prueba de `/` y `/health` mediante el puerto publicado.
+- Prueba de `/` y `/health` mediante el puerto publicado, usando
+  `public/index.php` como router del servidor PHP integrado.
 - Prueba opcional de conexión PostgreSQL con `SELECT 1`, sin modificar datos.
 
 ## Supuestos
@@ -40,4 +45,5 @@ Docker levantará solo la aplicación PHP y se conectará al PostgreSQL definido
 - Docker solo ejecutará la aplicación; no se crearán tablas, migraciones, semillas ni un servicio PostgreSQL adicional en esta etapa.
 - `.env` permanecerá local y no se incluirá en Git ni en la documentación.
 - Se usará PHP 8.5 como referencia local y una imagen Docker compatible con PHP moderno y `pdo_pgsql`.
-- No se crearán commits todavía; el directorio `.git` actual no contiene historial utilizable.
+- El repositorio ya cuenta con historial Git; los cambios posteriores deben
+  conservar commits pequeños y explicables por propósito.
