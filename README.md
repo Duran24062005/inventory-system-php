@@ -56,8 +56,9 @@ definido por `APP_PORT`.
 ## Estructura
 
 ```text
-public/       Punto de entrada HTTP
-api/          Entry point para la función PHP de Vercel
+public/       Punto de entrada HTTP y router de la aplicación
+api/          Puente compatible para invocar el bootstrap PHP directamente
+Dockerfile.vercel  Imagen de ejecución para Vercel
 src/Config/   Configuración y conexión PDO
 src/Http/     Request, Response y Router
 src/Controllers/
@@ -78,4 +79,6 @@ La guía audiovisual vertical y sus fuentes editables están en
 Consulta [`docs/manual-edicion.md`](docs/manual-edicion.md) para ubicar rutas,
 controladores, vistas, conexión y variables sin mezclar responsabilidades.
 La configuración específica de Vercel está documentada por separado en
-[`docs/vercel-deployment.md`](docs/vercel-deployment.md).
+[`docs/vercel-deployment.md`](docs/vercel-deployment.md). El despliegue usa el
+servicio contenedorizado de Vercel y `Dockerfile.vercel`; no usa el
+`Dockerfile` local ni el runtime comunitario `vercel-php`.

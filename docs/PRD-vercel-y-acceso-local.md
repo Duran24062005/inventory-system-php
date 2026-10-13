@@ -12,7 +12,7 @@ El objetivo es que el proyecto:
 - muestre la aplicación al abrirlo desde Apache bajo `/inventory-system/`;
 - conserve `public/` como punto de entrada recomendado para el servidor PHP
   integrado y Docker;
-- exponga un entrypoint específico para el runtime PHP de Vercel;
+- exponga un servicio contenedorizado con un entrypoint explícito para Vercel;
 - deje documentados los puntos de edición manual, las variables y los límites
   operativos.
 
@@ -31,8 +31,9 @@ Incluye:
   router para que `/health` no dependa de un archivo físico;
 - normalización del prefijo de carpeta en `Request`, sin cambiar las rutas
   públicas (`/` y `/health`);
-- `api/index.php` como función única para Vercel;
-- `vercel.json` con `vercel-php@0.9.0` y una ruta de fallback hacia la función;
+- `Dockerfile.vercel` como imagen de ejecución de Vercel;
+- `vercel.json` con un servicio `container`, su `entrypoint` y un rewrite de
+  fallback hacia el servicio;
 - `.vercelignore` para no enviar dependencias locales ni archivos de entorno;
 - README y documentación operativa actualizados.
 
@@ -46,8 +47,8 @@ de conexión configuradas; no ejecuta una consulta contra la base de datos.
   bootstrap de `public/index.php`.
 - **Desarrollador local con PHP/Docker:** continúa usando `public/index.php`
   como document root.
-- **Vercel:** invoca `api/index.php`; el runtime instala Composer y ese
-  entrypoint delega al mismo bootstrap de la aplicación.
+- **Vercel:** construye `Dockerfile.vercel`, inicia el servidor integrado de
+  PHP en `PORT` y ese proceso delega al mismo bootstrap de la aplicación.
 - **PostgreSQL externo:** se configura mediante `DATABASE_URL` o las variables
   `PG*`/`POSTGRES_*` en el entorno de ejecución.
 
@@ -58,16 +59,19 @@ de conexión configuradas; no ejecuta una consulta contra la base de datos.
 2. `Request` elimina únicamente el directorio que contiene el script actual.
    Así `/inventory-system/health` se convierte en `/health` en Apache, pero
    `/health` permanece intacto en Vercel o en el servidor PHP integrado.
-3. Vercel usa una sola función PHP y un fallback global porque el router actual
-   es el responsable de distinguir las rutas.
-4. No se versionan credenciales ni `vendor/`. Composer debe instalar las
-   dependencias en el build/runtime de Vercel.
+3. Vercel usa un único servicio contenedorizado y un rewrite global porque el
+   router actual es el responsable de distinguir las rutas.
+4. `vercel.json` no mezcla `functions` con `services`: el servicio recibe el
+   entrypoint `Dockerfile.vercel` de forma explícita.
+5. No se versionan credenciales ni `vendor/`. Composer instala las
+   dependencias durante la construcción de la imagen.
 
 ## Validaciones y riesgos
 
 - Verificar sintaxis PHP y `composer validate` antes de desplegar.
 - Probar `/` y `/health` con el prefijo local y sin él.
-- Configurar `DATABASE_URL` en Vercel antes de esperar el estado
+- Configurar el Framework Preset como `Services` y `DATABASE_URL` en Vercel
+  antes de esperar el estado
   `configured`.
 - La conexión PostgreSQL requiere un proveedor accesible desde Vercel y
   credenciales válidas; la configuración de routing no prueba conectividad.

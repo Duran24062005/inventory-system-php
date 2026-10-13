@@ -22,7 +22,7 @@ no hay un framework que genere archivos por detrás.
 | Entrada Apache bajo una carpeta | `index.php` | Solo el puente; no dupliques lógica aquí |
 | Reescritura Apache local | `.htaccess` | Desactiva listados, bloquea archivos internos y envía rutas al puente |
 | Document root recomendado | `public/.htaccess` y `docs/apache-local.conf.example` | Envía rutas desconocidas a `public/index.php` |
-| Entrada Vercel | `api/index.php` | Solo el puente hacia `public/index.php` |
+| Ejecución Vercel | `Dockerfile.vercel` y `vercel.json` | Imagen, entrypoint del contenedor y rewrite público |
 | Rutas y métodos | `src/Http/Router.php` | Registro y despacho de rutas |
 | Lectura de la petición | `src/Http/Request.php` | Método, URI y eliminación del prefijo local |
 | Respuestas | `src/Http/Response.php` | HTML, JSON, status y headers |
