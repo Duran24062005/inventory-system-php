@@ -1,3 +1,12 @@
 .env
-/vendor
-vendor/
+.env.*
+!.env.example
+
+/vendor/
+
+*.log
+.phpunit.result.cache
+
+.idea/
+.vscode/
+.DS_Store

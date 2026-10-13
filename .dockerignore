@@ -1,0 +1,8 @@
+.env
+.git
+.gitignore
+.agents
+.aws
+.codex
+/vendor
+*.log
