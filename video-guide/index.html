@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory System PHP — guía de edición</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+        :root {
+            --canvas: #f3f6fb;
+            --foreground: #172033;
+            --panel: #ffffff;
+            --border: #dce3ef;
+            --muted: #59667e;
+            --accent: #3c5ccf;
+            --code: #edf2f8;
+            --shadow: rgba(30, 52, 92, 0.12);
+        }
+
+        @font-face {
+            font-family: "IBM Plex Sans";
+            src: local("IBM Plex Sans");
+            font-style: normal;
+            font-weight: 400 800;
+        }
+
+        @font-face {
+            font-family: "IBM Plex Mono";
+            src: local("IBM Plex Mono");
+            font-style: normal;
+            font-weight: 400 700;
+        }
+
+        * { box-sizing: border-box; }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: var(--canvas);
+            color: var(--foreground);
+            font-family: "IBM Plex Sans", sans-serif;
+        }
+
+        [data-composition-id="inventory-system-guide"] {
+            position: relative;
+            overflow: hidden;
+            background: var(--canvas);
+        }
+
+        .scene {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            padding: 116px 72px 520px;
+            background: var(--canvas);
+            overflow: hidden;
+        }
+
+        .scene::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: rgba(60, 92, 207, 0.11);
+            filter: blur(6px);
+            transform: translate(42%, -38%);
+        }
+
+        .scene::after {
+            content: "";
+            position: absolute;
+            right: 72px;
+            bottom: 310px;
+            width: 260px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.28;
+            transform-origin: right center;
+        }
+
+        .scene-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            gap: 28px;
+        }
+
+        .step {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            width: max-content;
+            color: var(--accent);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .step::before {
+            content: "";
+            width: 44px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--accent);
+        }
+
+        h1,
+        h2,
+        p { margin: 0; }
+
+        h1,
+        h2 {
+            max-width: 930px;
+            font-weight: 800;
+            letter-spacing: -0.045em;
+            line-height: 0.98;
+        }
+
+        h1 { font-size: 88px; }
+        h2 { font-size: 70px; }
+
+        .lead {
+            max-width: 870px;
+            color: var(--muted);
+            font-size: 30px;
+            line-height: 1.28;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 4px;
+        }
+
+        .chip {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            color: var(--foreground);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 21px;
+            box-shadow: 0 12px 28px rgba(36, 62, 112, 0.06);
+        }
+
+        .code-card,
+        .flow-card,
+        .check-card {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: var(--panel);
+            box-shadow: 0 20px 44px var(--shadow);
+        }
+
+        .code-card {
+            padding: 26px 28px;
+            background: var(--code);
+        }
+
+        .code-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            color: var(--muted);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 20px;
+        }
+
+        .code-label strong { color: var(--accent); }
+
+        .code-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--foreground);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 22px;
+            line-height: 1.28;
+            font-variant-ligatures: none;
+        }
+
+        .code-line {
+            display: block;
+            min-height: 28px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+
+        .code-line.highlight {
+            background: rgba(60, 92, 207, 0.13);
+            color: #263e9e;
+        }
+
+        .keyword,
+        .route { color: var(--accent); font-weight: 700; }
+
+        .tree-card {
+            display: grid;
+            grid-template-columns: 1fr 1.12fr;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .tree,
+        .flow-card,
+        .check-card { padding: 24px; }
+
+        .tree {
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: var(--panel);
+            box-shadow: 0 20px 44px var(--shadow);
+            color: var(--foreground);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 22px;
+            line-height: 1.7;
+        }
+
+        .tree .folder { color: var(--accent); font-weight: 700; }
+        .tree .muted { color: var(--muted); }
+
+        .flow-card {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            justify-content: center;
+            background: #eaf0ff;
+        }
+
+        .flow-node {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 17px 18px;
+            border: 1px solid rgba(60, 92, 207, 0.24);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.72);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 21px;
+        }
+
+        .arrow {
+            align-self: center;
+            color: var(--accent);
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .split .code-card { min-height: 280px; }
+
+        .check-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            background: var(--panel);
+        }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 60px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: var(--code);
+            color: var(--foreground);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 23px;
+        }
+
+        .check-mark {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            font-family: "IBM Plex Sans", sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .footer-note {
+            margin-top: auto;
+            color: var(--muted);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 20px;
+        }
+
+        .caption-layer {
+            position: absolute;
+            left: 72px;
+            right: 72px;
+            bottom: 112px;
+            z-index: 40;
+            height: 116px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 930px;
+            padding: 18px 24px;
+            border-radius: 16px;
+            background: rgba(23, 32, 51, 0.94);
+            color: #ffffff;
+            font-size: 27px;
+            font-weight: 600;
+            line-height: 1.25;
+            opacity: 1;
+        }
+
+        .caption .emphasis { color: #aebcff; }
+
+        .audio-marker {
+            position: absolute;
+            left: 72px;
+            bottom: 58px;
+            z-index: 41;
+            color: var(--muted);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 18px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .scene-number {
+            position: absolute;
+            right: 72px;
+            bottom: 58px;
+            z-index: 41;
+            color: var(--accent);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .audio { display: none; }
+    </style>
+</head>
+<body>
+<div data-hf-id="hf-4x7e" id="inventory-system-guide" data-composition-id="inventory-system-guide" data-start="0" data-duration="56" data-width="1080" data-height="1920">
+    <audio data-hf-id="hf-qke0" id="narration" class="audio" data-start="0" data-duration="55.936" data-track-index="0" src="audio/narration.wav" data-volume="1"></audio>
+
+    <section data-hf-id="hf-mp0v" class="scene clip" id="scene-intro" data-start="0" data-duration="8.1" data-track-index="1">
+        <div data-hf-id="hf-cn5c" class="scene-content">
+            <div data-hf-id="hf-los8" class="step">01 · mapa rápido</div>
+            <h1 data-hf-id="hf-2ahn" id="intro-title">Inventory System PHP</h1>
+            <p data-hf-id="hf-iesa" id="intro-lead" class="lead">Una base clara para aprender dónde modificar un sistema de ventas.</p>
+            <div data-hf-id="hf-j1z5" id="intro-chips" class="chip-row">
+                <span data-hf-id="hf-9w4j" class="chip">PHP puro</span>
+                <span data-hf-id="hf-m79r" class="chip">MVC ligero</span>
+                <span data-hf-id="hf-j7mp" class="chip">PostgreSQL</span>
+            </div>
+            <div data-hf-id="hf-lwle" id="intro-tree" class="tree-card">
+                <div data-hf-id="hf-4g4g" class="tree">
+                    <div data-hf-id="hf-4yyi"><span data-hf-id="hf-lor5" class="folder">public/</span> index.php</div>
+                    <div data-hf-id="hf-2aes"><span data-hf-id="hf-ue6m" class="folder">src/</span> Controllers · Http</div>
+                    <div data-hf-id="hf-0sps"><span data-hf-id="hf-tsse" class="folder">views/</span> pantallas</div>
+                    <div data-hf-id="hf-g8em"><span data-hf-id="hf-kr3f" class="folder">docs/</span> decisiones</div>
+                </div>
+                <div data-hf-id="hf-9zdf" class="flow-card">
+                    <div data-hf-id="hf-0g2t" class="flow-node"><span data-hf-id="hf-x1sk">petición HTTP</span><strong data-hf-id="hf-h3rc">→</strong></div>
+                    <div data-hf-id="hf-abp5" class="flow-node"><span data-hf-id="hf-4on4">router</span><strong data-hf-id="hf-rsu8">→</strong></div>
+                    <div data-hf-id="hf-bim8" class="flow-node"><span data-hf-id="hf-dt7a">controlador + vista</span><strong data-hf-id="hf-md0b">✓</strong></div>
+                </div>
+            </div>
+            <p data-hf-id="hf-cuy5" class="footer-note">Guía para modificar el proyecto sin mezclar responsabilidades.</p>
+        </div>
+        <div data-hf-id="hf-48qq" class="scene-number">01 / 06</div>
+    </section>
+
+    <section data-hf-id="hf-l3xm" class="scene clip" id="scene-setup" data-start="7.7" data-duration="6.6" data-track-index="2">
+        <div data-hf-id="hf-o0eg" class="scene-content">
+            <div data-hf-id="hf-e3dk" class="step">02 · prepara el entorno</div>
+            <h2 data-hf-id="hf-yqf2" id="setup-title">Primero, configura lo local.</h2>
+            <p data-hf-id="hf-3232" id="setup-lead" class="lead">El proyecto lee variables locales e instala sus dependencias con Composer.</p>
+            <div data-hf-id="hf-uryv" id="setup-code" class="code-card">
+                <div data-hf-id="hf-qg4y" class="code-label"><span data-hf-id="hf-hp05">terminal</span><strong data-hf-id="hf-t10q">seguro y reproducible</strong></div>
+                <div data-hf-id="hf-kbmp" class="code-lines">
+                    <span data-hf-id="hf-t8kt" class="code-line"><span data-hf-id="hf-e9wl" class="keyword">cp</span> .env.example .env</span>
+                    <span data-hf-id="hf-b9z0" class="code-line highlight"><span data-hf-id="hf-detw" class="keyword">composer</span> install</span>
+                    <span data-hf-id="hf-t2ek" class="code-line"><span data-hf-id="hf-17zm" class="keyword">php</span> -S localhost:8080 -t public public/index.php</span>
+                    <span data-hf-id="hf-to1m" class="code-line"><span data-hf-id="hf-vu8u" class="keyword">docker compose</span> up --build</span>
+                </div>
+            </div>
+            <div data-hf-id="hf-vvb3" id="setup-note" class="chip-row">
+                <span data-hf-id="hf-vt9u" class="chip">.env no se versiona</span>
+                <span data-hf-id="hf-3ns7" class="chip">Docker ejecuta solo la app</span>
+            </div>
+            <p data-hf-id="hf-u97j" class="footer-note">Usa valores de ejemplo; nunca pegues credenciales en el código.</p>
+        </div>
+        <div data-hf-id="hf-bael" class="scene-number">02 / 06</div>
+    </section>
+
+    <section data-hf-id="hf-1fde" class="scene clip" id="scene-routes" data-start="13.8" data-duration="12.3" data-track-index="3">
+        <div data-hf-id="hf-mthd" class="scene-content">
+            <div data-hf-id="hf-61kr" class="step">03 · registra una ruta</div>
+            <h2 data-hf-id="hf-crgx" id="routes-title">La entrada pública vive en `public/index.php`.</h2>
+            <p data-hf-id="hf-sxnw" id="routes-lead" class="lead">El router actual trabaja con GET y conecta cada URL con su controlador.</p>
+            <div data-hf-id="hf-mr40" id="routes-flow" class="flow-card">
+                <div data-hf-id="hf-b4b7" class="flow-node"><span data-hf-id="hf-54e1" class="route">/</span><span data-hf-id="hf-ekje">HomeController</span></div>
+                <div data-hf-id="hf-94s2" class="flow-node"><span data-hf-id="hf-st4r" class="route">/health</span><span data-hf-id="hf-upvj">HealthController</span></div>
+                <div data-hf-id="hf-8qh1" class="flow-node"><span data-hf-id="hf-tpxd" class="route">/products</span><span data-hf-id="hf-n8mi">ejemplo futuro</span></div>
+            </div>
+            <div data-hf-id="hf-ro9g" id="routes-code" class="code-card">
+                <div data-hf-id="hf-rmra" class="code-label"><span data-hf-id="hf-2k9l">public/index.php</span><strong data-hf-id="hf-wagn">registro</strong></div>
+                <div data-hf-id="hf-k99x" class="code-lines">
+                    <span data-hf-id="hf-vuie" class="code-line"><span data-hf-id="hf-1lzz" class="keyword">$router</span>-&gt;get(<span data-hf-id="hf-1h8b" class="route">'/products'</span>,</span>
+                    <span data-hf-id="hf-egtz" class="code-line">    [new ProductController(), <span data-hf-id="hf-ogrk" class="route">'index'</span>]);</span>
+                </div>
+            </div>
+            <p data-hf-id="hf-l2n1" class="footer-note">`/products` todavía no existe: es el patrón para la siguiente ampliación.</p>
+        </div>
+        <div data-hf-id="hf-cauo" class="scene-number">03 / 06</div>
+    </section>
+
+    <section data-hf-id="hf-46xy" class="scene clip" id="scene-view" data-start="25.6" data-duration="8.9" data-track-index="4">
+        <div data-hf-id="hf-n7se" class="scene-content">
+            <div data-hf-id="hf-4hq9" class="step">04 · separa responsabilidades</div>
+            <h2 data-hf-id="hf-me6x" id="view-title">Controlador, respuesta y vista.</h2>
+            <p data-hf-id="hf-1gss" id="view-lead" class="lead">El controlador orquesta; la vista se ocupa del HTML visible.</p>
+            <div data-hf-id="hf-hd8u" id="view-split" class="split">
+                <div data-hf-id="hf-tjq2" class="code-card">
+                    <div data-hf-id="hf-s12b" class="code-label"><span data-hf-id="hf-7qrz">src/Controllers</span><strong data-hf-id="hf-9coi">orquesta</strong></div>
+                    <div data-hf-id="hf-lg70" class="code-lines">
+                        <span data-hf-id="hf-e509" class="code-line"><span data-hf-id="hf-4jvs" class="keyword">return</span> Response::html(</span>
+                        <span data-hf-id="hf-wv6b" class="code-line">    View::render(<span data-hf-id="hf-9hdb" class="route">'home'</span>, $data)</span>
+                        <span data-hf-id="hf-prgx" class="code-line">);</span>
+                    </div>
+                </div>
+                <div data-hf-id="hf-rqke" class="code-card">
+                    <div data-hf-id="hf-sfdc" class="code-label"><span data-hf-id="hf-zm7q">views/</span><strong data-hf-id="hf-au4s">presenta</strong></div>
+                    <div data-hf-id="hf-l1vz" class="code-lines">
+                        <span data-hf-id="hf-61j3" class="code-line highlight">htmlspecialchars($value,</span>
+                        <span data-hf-id="hf-jpex" class="code-line highlight">    ENT_QUOTES, 'UTF-8')</span>
+                        <span data-hf-id="hf-0ok5" class="code-line">SQL fuera de la vista.</span>
+                    </div>
+                </div>
+            </div>
+            <p data-hf-id="hf-stlj" class="footer-note">Edita el archivo dueño de la responsabilidad y prueba la ruta afectada.</p>
+        </div>
+        <div data-hf-id="hf-vg2j" class="scene-number">04 / 06</div>
+    </section>
+
+    <section data-hf-id="hf-f9w8" class="scene clip" id="scene-data" data-start="33.9" data-duration="13.7" data-track-index="5">
+        <div data-hf-id="hf-m0vb" class="scene-content">
+            <div data-hf-id="hf-7z8l" class="step">05 · datos y despliegue</div>
+            <h2 data-hf-id="hf-hpmr" id="data-title">Local y Vercel siguen el mismo bootstrap.</h2>
+            <p data-hf-id="hf-9r0f" id="data-lead" class="lead">La conexión se centraliza en `Database`; el contenedor define cómo arranca cada entorno.</p>
+            <div data-hf-id="hf-sc5t" id="data-split" class="split">
+                <div data-hf-id="hf-s4vf" class="code-card">
+                    <div data-hf-id="hf-pn85" class="code-label"><span data-hf-id="hf-tnom">src/Config/Database.php</span><strong data-hf-id="hf-6wps">PostgreSQL</strong></div>
+                    <div data-hf-id="hf-m8t2" class="code-lines">
+                        <span data-hf-id="hf-6xcy" class="code-line highlight">DATABASE_URL</span>
+                        <span data-hf-id="hf-qhfe" class="code-line">o variables PG*</span>
+                        <span data-hf-id="hf-ilfa" class="code-line">PDO + prepared statements</span>
+                    </div>
+                </div>
+                <div data-hf-id="hf-sj6g" class="code-card">
+                    <div data-hf-id="hf-q1j6" class="code-label"><span data-hf-id="hf-ottk">despliegue</span><strong data-hf-id="hf-av6u">Services</strong></div>
+                    <div data-hf-id="hf-lui1" class="code-lines">
+                        <span data-hf-id="hf-110v" class="code-line">Dockerfile</span>
+                        <span data-hf-id="hf-2bzo" class="code-line highlight">Dockerfile.vercel</span>
+                        <span data-hf-id="hf-qsr4" class="code-line">vercel.json → inventory</span>
+                    </div>
+                </div>
+            </div>
+            <p data-hf-id="hf-phru" class="footer-note">Configura variables por entorno y valida el Preview antes de Production.</p>
+        </div>
+        <div data-hf-id="hf-u6j2" class="scene-number">05 / 06</div>
+    </section>
+
+    <section data-hf-id="hf-dbvo" class="scene clip" id="scene-final" data-start="47.2" data-duration="8.8" data-track-index="6">
+        <div data-hf-id="hf-mf6c" class="scene-content">
+            <div data-hf-id="hf-nl3o" class="step">06 · valida cada cambio</div>
+            <h2 data-hf-id="hf-q6oa" id="final-title">Un cambio claro termina con evidencia.</h2>
+            <div data-hf-id="hf-01dv" id="final-checks" class="check-card">
+                <div data-hf-id="hf-zsdk" class="check"><span data-hf-id="hf-1dak" class="check-mark">✓</span><span data-hf-id="hf-qu8j">php -l y composer validate</span></div>
+                <div data-hf-id="hf-melc" class="check"><span data-hf-id="hf-83ok" class="check-mark">✓</span><span data-hf-id="hf-zuot">prueba `/` y `/health`</span></div>
+                <div data-hf-id="hf-l7o9" class="check"><span data-hf-id="hf-6wrh" class="check-mark">✓</span><span data-hf-id="hf-99zn">actualiza la documentación</span></div>
+            </div>
+            <p data-hf-id="hf-spom" id="final-lead" class="lead">Hoy es una base. Productos, ventas e inventario son la siguiente fase.</p>
+            <p data-hf-id="hf-m306" id="final-note" class="footer-note">Inventory System PHP · guía editable con HyperFrames</p>
+        </div>
+        <div data-hf-id="hf-ksyh" class="scene-number">06 / 06</div>
+    </section>
+
+    <div data-hf-id="hf-yv08" id="caption-layer" class="caption-layer" aria-live="polite">
+        <div data-hf-id="hf-p8oe" id="caption-0" class="caption">Este es <span data-hf-id="hf-65wu" class="emphasis">Inventory System PHP</span></div>
+        <div data-hf-id="hf-4tto" id="caption-1" class="caption">una base de sistema de ventas</div>
+        <div data-hf-id="hf-zrx2" id="caption-2" class="caption">construida con PHP puro, MVC ligero y PostgreSQL</div>
+        <div data-hf-id="hf-tvjl" id="caption-3" class="caption">Para empezar, copia `.env.example` a `.env`</div>
+        <div data-hf-id="hf-fqgz" id="caption-4" class="caption">instala dependencias con `composer install` y arranca PHP o Docker</div>
+        <div data-hf-id="hf-snt7" id="caption-5" class="caption">La entrada pública está en `public/index.php`</div>
+        <div data-hf-id="hf-jc4n" id="caption-6" class="caption">Para añadir una ruta, crea su controlador y regístralo en el router</div>
+        <div data-hf-id="hf-e9by" id="caption-7" class="caption">Por ejemplo, `/products` sería una ampliación futura</div>
+        <div data-hf-id="hf-o2k7" id="caption-8" class="caption">Hoy solo existen `/` y `/health`</div>
+        <div data-hf-id="hf-kue5" id="caption-9" class="caption">El controlador devuelve una respuesta y renderiza una vista desde `views`</div>
+        <div data-hf-id="hf-4gev" id="caption-10" class="caption">Escapa los datos con `htmlspecialchars` y mantén las consultas fuera de la vista</div>
+        <div data-hf-id="hf-o6hg" id="caption-11" class="caption">La conexión central vive en `Database` y usa `DATABASE_URL` o variables `PG`</div>
+        <div data-hf-id="hf-95ft" id="caption-12" class="caption">Para desplegar, Docker y `Dockerfile.vercel` separan los entornos</div>
+        <div data-hf-id="hf-rs6x" id="caption-13" class="caption">Vercel usa el servicio contenedorizado documentado en `vercel.json`</div>
+        <div data-hf-id="hf-mqit" id="caption-14" class="caption">Antes de cada cambio, ejecuta `php -l` y `composer validate`</div>
+        <div data-hf-id="hf-o8ag" id="caption-15" class="caption">prueba `/health` y actualiza la documentación</div>
+        <div data-hf-id="hf-e88v" id="caption-16" class="caption">Productos, ventas e inventario son la siguiente fase</div>
+    </div>
+    <div data-hf-id="hf-3bv5" class="audio-marker">narración · es</div>
+
+    <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+        const scenes = [
+            { start: 0, end: 8.1 },
+            { start: 7.7, end: 14.3 },
+            { start: 13.8, end: 26.1 },
+            { start: 25.6, end: 34.5 },
+            { start: 33.9, end: 47.6 },
+            { start: 47.2, end: 56.0 },
+        ];
+
+        const enter = (selector, vars, at) => tl.from(selector, { ...vars, immediateRender: false }, at);
+
+        enter("#intro-title", { y: 60, opacity: 0, duration: 0.7, ease: "expo.out" }, 0.2);
+        enter("#intro-lead", { x: -45, opacity: 0, duration: 0.55, ease: "power3.out" }, 0.58);
+        enter("#intro-chips .chip", { y: 28, scale: 0.92, opacity: 0, duration: 0.45, ease: "back.out(1.4)", stagger: 0.12 }, 1.0);
+        enter("#intro-tree", { x: 60, opacity: 0, duration: 0.65, ease: "power2.out" }, 1.5);
+
+        enter("#scene-setup .step", { x: -40, opacity: 0, duration: 0.45, ease: "power3.out" }, 7.88);
+        enter("#setup-title", { y: 48, opacity: 0, duration: 0.62, ease: "expo.out" }, 8.15);
+        enter("#setup-lead", { y: 28, opacity: 0, duration: 0.5, ease: "sine.out" }, 8.54);
+        enter("#setup-code", { x: 54, opacity: 0, duration: 0.65, ease: "power3.out" }, 8.9);
+        enter("#setup-note .chip", { scale: 0.86, opacity: 0, duration: 0.45, ease: "back.out(1.5)", stagger: 0.14 }, 9.8);
+
+        enter("#scene-routes .step", { y: 38, opacity: 0, duration: 0.46, ease: "power2.out" }, 13.96);
+        enter("#routes-title", { x: -54, opacity: 0, duration: 0.6, ease: "expo.out" }, 14.22);
+        enter("#routes-lead", { y: 24, opacity: 0, duration: 0.5, ease: "sine.out" }, 14.68);
+        enter("#routes-flow .flow-node", { x: 70, opacity: 0, duration: 0.45, ease: "back.out(1.25)", stagger: 0.14 }, 15.1);
+        enter("#routes-code", { scale: 0.9, opacity: 0, duration: 0.6, ease: "power3.out" }, 15.75);
+
+        enter("#scene-view .step", { x: 44, opacity: 0, duration: 0.46, ease: "power3.out" }, 25.78);
+        enter("#view-title", { y: 42, opacity: 0, duration: 0.58, ease: "expo.out" }, 26.04);
+        enter("#view-lead", { x: -40, opacity: 0, duration: 0.5, ease: "sine.out" }, 26.52);
+        enter("#view-split .code-card", { y: 58, opacity: 0, duration: 0.55, ease: "back.out(1.25)", stagger: 0.18 }, 26.9);
+
+        enter("#scene-data .step", { y: 38, opacity: 0, duration: 0.46, ease: "power3.out" }, 34.08);
+        enter("#data-title", { x: -48, opacity: 0, duration: 0.62, ease: "expo.out" }, 34.38);
+        enter("#data-lead", { y: 26, opacity: 0, duration: 0.5, ease: "sine.out" }, 34.84);
+        enter("#data-split .code-card", { scale: 0.9, opacity: 0, duration: 0.55, ease: "back.out(1.3)", stagger: 0.18 }, 35.22);
+
+        enter("#scene-final .step", { x: -42, opacity: 0, duration: 0.46, ease: "power3.out" }, 47.38);
+        enter("#final-title", { y: 44, opacity: 0, duration: 0.6, ease: "expo.out" }, 47.65);
+        enter("#final-checks .check", { x: 60, opacity: 0, duration: 0.45, ease: "back.out(1.25)", stagger: 0.16 }, 48.3);
+        enter("#final-lead", { y: 28, opacity: 0, duration: 0.5, ease: "sine.out" }, 49.3);
+        enter("#final-note", { opacity: 0, duration: 0.65, ease: "power1.out" }, 50.4);
+
+        const captionGroups = [
+            [0.04, 2.08], [2.15, 4.46], [4.46, 7.90], [7.94, 10.92],
+            [10.04, 13.96], [14.00, 17.24], [17.28, 20.76], [20.87, 23.56],
+            [23.63, 25.84], [25.88, 29.72], [29.80, 34.11], [34.16, 38.28],
+            [38.32, 44.77], [44.89, 47.30], [47.35, 50.36], [50.36, 53.40],
+            [53.44, 55.88],
+        ];
+
+        captionGroups.forEach(([start, end], index) => {
+            const selector = `#caption-${index}`;
+            tl.set(selector, { opacity: 0, visibility: "hidden" }, 0);
+            tl.set(selector, { visibility: "visible" }, start);
+            tl.fromTo(selector, { y: 18, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.16, ease: "power3.out" }, start);
+            tl.to(selector, { y: 8, opacity: 0, scale: 0.98, duration: 0.12, ease: "power2.in" }, Math.max(start + 0.2, end - 0.12));
+            tl.set(selector, { opacity: 0, visibility: "hidden" }, end);
+        });
+
+        // The final scene is the only scene with an exit fade.
+        tl.to("#scene-final", { opacity: 0, duration: 0.55, ease: "power1.inOut" }, 55.35);
+
+        window.__timelines["inventory-system-guide"] = tl;
+    </script>
+</div>
+</body>
+</html>
