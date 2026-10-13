@@ -69,6 +69,10 @@ docs/         Decisiones y planificación del proyecto
 La conexión está centralizada en `Database::connection()`. Usa `DATABASE_URL`
 como opción principal y puede utilizar las variables `PG*` como alternativa.
 
+La guía audiovisual vertical y sus fuentes editables están en
+[`video-guide/`](video-guide/), con el contexto y las decisiones del trabajo en
+[`docs/PRD-video-guia-hyperframes.md`](docs/PRD-video-guia-hyperframes.md).
+
 ## Dónde editar manualmente
 
 Consulta [`docs/manual-edicion.md`](docs/manual-edicion.md) para ubicar rutas,
