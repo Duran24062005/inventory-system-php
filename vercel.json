@@ -1,14 +1,18 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "functions": {
-        "api/index.php": {
-            "runtime": "vercel-php@0.9.0"
+    "services": {
+        "inventory": {
+            "root": ".",
+            "runtime": "container",
+            "entrypoint": "Dockerfile.vercel"
         }
     },
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(.*)",
-            "dest": "/api/index.php"
+            "source": "/(.*)",
+            "destination": {
+                "service": "inventory"
+            }
         }
     ]
 }
