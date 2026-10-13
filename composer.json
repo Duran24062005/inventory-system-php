@@ -1,0 +1,17 @@
+{
+    "name": "alexi-dg/inventory-system",
+    "description": "Project of practic in pure Php",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AlexiDg\\InventorySystem\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexi Dg",
+            "email": "alexisdurangomez588@gmail.com"
+        }
+    ],
+    "require": {}
+}
