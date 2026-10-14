@@ -21,5 +21,6 @@
         <a href="/tree-json">Tree JSON</a>
     </nav>
 </main>
+<script src="scripts/script.js"></script>
 </body>
 </html>

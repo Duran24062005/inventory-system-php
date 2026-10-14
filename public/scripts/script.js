@@ -1,3 +1,3 @@
 document.addEventListener('DOMContentLoaded', ()=>{
-    alert("JavaScript loaded!")
+    console.log("JavaScript loaded!")
 });
