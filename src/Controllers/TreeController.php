@@ -9,10 +9,8 @@ use AlexiDg\InventorySystem\Views\View;
 
 final class TreeController
 {
-    public function index(): Response
-    {
-        // Definimos el árbol usando Nowdoc para mantener el formato limpio
-        $tree = <<<'TREE'
+    // Definimos el árbol usando Nowdoc para mantener el formato limpio.
+    private static string $tree = <<<'TREE'
 ├── api
 │   └── index.php
 ├── composer.json
@@ -184,10 +182,12 @@ final class TreeController
 └── views
 TREE;
 
+    public function index(): Response
+    {
         return Response::json([
             "status" => "ok",
             "service" => 'inventory-system',
-            'tree' => $tree
+            'tree' => self::$tree,
         ]);
     }
 
@@ -195,6 +195,7 @@ TREE;
     {
         return Response::html(View::render('tree-html', [
             'appName' => 'Pagina de prueba',
+            'tree' => self::$tree,
         ]));
     }
 }

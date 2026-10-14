@@ -14,6 +14,12 @@
         La aplicación está lista para crecer por módulos. El endpoint
         <code>/health</code> confirma el estado básico del servicio.
     </p>
+    <nav class="route-links" aria-label="Rutas disponibles">
+        <a href="/">Inicio</a>
+        <a href="/health">Health</a>
+        <a href="/tree-html">Tree HTML</a>
+        <a href="/tree-json">Tree JSON</a>
+    </nav>
 </main>
 </body>
 </html>
