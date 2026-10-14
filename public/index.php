@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AlexiDg\InventorySystem\Controllers\HealthController;
 use AlexiDg\InventorySystem\Controllers\HomeController;
+use AlexiDg\InventorySystem\Controllers\TreeController;
 use AlexiDg\InventorySystem\Http\Request;
 use AlexiDg\InventorySystem\Http\Router;
 use Dotenv\Dotenv;
@@ -43,5 +44,7 @@ Dotenv::createImmutable($root)->safeLoad();
 $router = new Router();
 $router->get('/', [new HomeController(), 'index']);
 $router->get('/health', [new HealthController(), 'index']);
+$router->get('/tree-json', [new TreeController(), 'index']);
+$router->get('/tree-html', [new TreeController(), 'html']);
 
 $router->dispatch(Request::fromGlobals())->send();
